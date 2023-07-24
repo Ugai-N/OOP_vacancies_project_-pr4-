@@ -4,7 +4,6 @@ import datetime
 
 import requests
 
-from src.utils import modify_currency
 from src.vacancy import Vacancy
 
 SJ_API_KEY: str = os.getenv('SJ_API_KEY')
@@ -74,6 +73,7 @@ class HeadHunterAPI(AbstractAPI):
     def initialize_vacancy(self, search_query: str) -> None:
         for i in self.get_vacancies(search_query):
             Vacancy(
+                'HeadHunter',
                 i['name'],
                 i['area']['name'],
                 i['employer']['name'],
@@ -133,13 +133,14 @@ class SuperJobAPI(AbstractAPI):
     def initialize_vacancy(self, search_query: str) -> None:
         for i in self.get_vacancies(search_query):
             Vacancy(
+                'SuperJob',
                 i['profession'],
                 i['town']['title'],
                 i['firm_name'],
                 i['link'],
                 i['payment_from'],
                 i['payment_to'],
-                modify_currency(i['currency']),
+                i['currency'],
                 i['work'],
                 i['candidat']
             )
