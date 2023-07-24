@@ -3,6 +3,8 @@ import os
 import pandas as pd
 from abc import ABC, abstractmethod
 
+from pandas import ExcelWriter
+
 
 class AbstractFile(ABC):
     '''абстрактный класс, вкл методы для добавления вакансий в файл,
@@ -13,17 +15,19 @@ class AbstractFile(ABC):
     def save_vacancy(self, file, vacancy):
         pass
 
-    def get_vacancy(self):
+    @abstractmethod
+    def get_vacancy(self, file, *keyword):
         pass
 
-    def del_vacancy(self):
+    @abstractmethod
+    def del_vacancy(self, file, num):
         pass
 
 
 class JsonFile(AbstractFile):
     '''класс для работы с вакансиями в JSON-файле'''
 
-    def save_vacancy(self, file, vacancy_list):
+    def save_vacancy(self, file, vacancy_list) -> None:
         """Сохраняет/добавляет в файл значения атрибутов экземпляра Vacancy."""
         vacancies_dict_list = []
         for vacancy in vacancy_list:
@@ -35,7 +39,7 @@ class JsonFile(AbstractFile):
                     "Ссылка": vacancy.url,
                     "Зарплата от": vacancy.salary_min,
                     "Зарплата до": vacancy.salary_max,
-                    "Зарплата, среднее значение": vacancy.salary_avr,
+                    "Зарплата (среднее, RUR)": vacancy.salary_avr_rub,
                     "Валюта": vacancy.currency,
                     "Описание": vacancy.description,
                     "Требования": vacancy.requirements
@@ -53,17 +57,36 @@ class JsonFile(AbstractFile):
                 with open(file, 'w', encoding='utf-8') as f:
                     json.dump(vacancies_filelist, f, ensure_ascii=False)
 
-    def get_vacancy(self):
-        pass
+    def get_vacancy(self, file, *keyword) -> list:
+        filtered_lst = []
+        with open(file, 'r', encoding='utf-8') as f:
+            vacancies_filelist = json.load(f)
+            for vacancy in vacancies_filelist:
+                for word in keyword:
+                    if word in vacancy.values():
+                        filtered_lst.append(vacancy)
+        return filtered_lst
 
-    def del_vacancy(self):
-        pass
+    def del_vacancy(self, file, num) -> None:
+        with open(file, 'r', encoding='utf-8') as f:
+            vacancies_filelist = json.load(f)
+            # try:
+            for vacancy in vacancies_filelist:
+                if vacancy['№'] == int(num):
+                    vacancies_filelist.remove(vacancy)
+                    # vacancies_filelist.pop(vacancies_filelist.index(vacancy))
+            # except ValueError:
+            #     print('Вакансии под таким номером не существует')
+            # else:
+            #     print(f'Вакансия под номером {num} удалена')
+        with open(file, 'w', encoding='utf-8') as f:
+            json.dump(vacancies_filelist, f, ensure_ascii=False)
 
 
 class ExcelFile(AbstractFile):
     '''класс для работы с вакансиями в Excel-файле'''
 
-    def save_vacancy(self, file, vacancy_list):
+    def save_vacancy(self, file, vacancy_list) -> None:
         excel_dict = {'Вакансия': [],
                       'Регион': [],
                       'Компания': [],
@@ -77,7 +100,7 @@ class ExcelFile(AbstractFile):
                       'Требования': []
                       }
         for vacancy in vacancy_list:
-            # excel_dict['Вакансия'].append(f'{vacancy.title!r}'),
+            # excel_dict['Вакансия'].append(f'{vacancy.title!r}') - может ли быть ошибка записи файла, т.к. нет кавычек?
             excel_dict['Вакансия'].append(vacancy.title),
             excel_dict['Регион'].append(vacancy.area),
             excel_dict['Компания'].append(vacancy.company),
@@ -91,10 +114,26 @@ class ExcelFile(AbstractFile):
             excel_dict['Требования'].append(vacancy.requirements)
 
         data = pd.DataFrame(excel_dict)
-        data.to_excel(file)
+        with ExcelWriter(file, mode="a" if os.path.exists(file) else "w") as writer:
+            data.to_excel(writer, sheet_name='vacancies', index=False)
+        # data.to_excel(file, sheet_name='vacancies', index=False)
 
-    def get_vacancy(self):
-        pass
+    def get_vacancy(self, file, *keyword) -> list:
+        '''черновик, не могу проверить пока'''
+        filtered_lst = []
+        excel_data = pd.read_excel(file)
+        data = pd.DataFrame(excel_data, columns=['Вакансия', 'Регион', 'Компания', 'Платформа',
+                                                 'Ссылка', 'Зарплата от', 'Зарплата до',
+                                                 'Зарплата, среднее значение', 'Валюта',
+                                                 'Описание', 'Требования'])
+        for vacancy in data:
+            for word in keyword:
+                if word in vacancy.values():
+                    filtered_lst.append(vacancy)
+        return filtered_lst
 
-    def del_vacancy(self):
-        pass
+    def del_vacancy(self, file, num) -> None:
+        '''черновик, не могу проверить пока'''
+        data = pd.read_excel(file)
+        del_index = data.set_index('№')
+        del_index.drop([int(num)], axis=0)
