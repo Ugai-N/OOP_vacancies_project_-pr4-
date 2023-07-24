@@ -1,120 +1,56 @@
 from pathlib import Path
 
-from src.API import HeadHunterAPI, SuperJobAPI
 from src.file_manager import JsonFile
-from src.utils import filter_by_salary, sort_by_salary_up, sort_by_salary_down, get_top_vacancies, print_results
+from src.utils import choose_platform, choose_filter, choose_sorting, choose_top_qty, deliver_results, stop_list, \
+    print_results
 from src.vacancy import Vacancy
+# print(Vacancy.exchange_currency(10/3, 'RUB'))
 
-#
-# plumber.initialize_vacancy('python')
-# lst = Vacancy.vacancies_list.copy()
-# # sort_by_salary_up(lst)
-# print(len(lst))
-# for i in lst:
-#     if isinstance(i, Vacancy):
-#         pass
-#     else:
-#         print('oo')
-# print(sort_by_salary_up(lst))
+# fff_path = Path(__file__).resolve().parent.joinpath('data','_Nadya_python.json')
+# print(JsonFile().del_vacancy(fff_path, 10))
+# print_results(JsonFile().get_vacancy(fff_path, 'Петрозаводск', 'СОШ'))
 
-
-request_num = 6
-results = []
+user_name = input('Привет! я могу помочь в поиске вакансий '
+                  'на платформах "HeadHunter" и "SuperJob". '
+                  'Напишите свое имя:\n')
+user_name_upd = ''.join(symbol for symbol in user_name if symbol.isalnum())[:10]
+results = Vacancy.vacancies_list.clear()
 while True:
-    '''Может добавить опцию 0 для выхода?'''
-
-    Vacancy.vacancies_list.clear()
-    file_path = Path(__file__).resolve().parent.joinpath('data', str(request_num) + '.json')
-    user_file_path_js = Path(__file__).resolve().parent.joinpath('data', str(request_num) + 'user' + '.json')
-    user_file_path_xsl = Path(__file__).resolve().parent.joinpath('data', str(request_num) + 'user' + '.xlsx')
     search_query = input("Введите поисковый запрос: ")
-    platform_search = input("Выберите платформу для поиска вакансий:\n"
-                            "1 - 'HeadHunter'\n"
-                            "2 - 'SuperJob'\n"
-                            "3 - 'ОБЕ'\n")
-    print('Уже ищем. Секундочку')
-    if platform_search == '1':
-        HeadHunterAPI().initialize_vacancy(search_query)
-    elif platform_search == '2':
-        SuperJobAPI().initialize_vacancy(search_query)
-    elif platform_search == '3':
-        HeadHunterAPI().initialize_vacancy(search_query)
-        SuperJobAPI().initialize_vacancy(search_query)
+    search_query_upd = ''.join(symbol for symbol in search_query if symbol.isalnum())[:10]
+    file_path = Path(__file__).resolve().parent.joinpath('data',
+                                                         f'_{str(user_name_upd)}_'
+                                                         f'{str(search_query_upd)}'
+                                                         f'.json')
+    user_file_path_xsl = Path(__file__).resolve().parent.joinpath('data',
+                                                                  f'{str(user_name_upd)}_'
+                                                                  f'{str(search_query_upd)}'
+                                                                  f'.xlsx')
+
+    results = choose_platform(search_query)
+    if len(results) != 0:
+        print(f'Нашли {len(results)} вакансий')
     else:
-        print('Такой опции у нас нет. Попробуйте еще раз')
-        break
+        print('По вашему запросу ничего не найдено. Попробуйте еще раз')
+        continue
+    # for i in results:
+    #     print(i.currency)
 
-    results = Vacancy.vacancies_list
-    print(f'Нашли {len(results)} вакансий и записываем в общ.файл')
-    JsonFile().save_vacancy(file_path, Vacancy.vacancies_list)
-
-    while True:
-        to_filter = input('Хотите ли вы дополнительно отфильтровать полученные результаты по ЗП?\n'
-                          '1 - ДА\n'
-                          '2 - НЕТ\n')
-        if to_filter == '1':
-            while True:
-                salary_from = input('Укажите нижнюю границу по ЗП цифрами?\n').replace(' ', '')
-                if salary_from.isdigit():
-                    break
-                else:
-                    print('На ввод допускаются только цифры. Попробуйте еще раз')
-                    continue
-            while True:
-                salary_to = input('Укажите верхнюю границу по ЗП цифрами?\n').replace(' ', '')
-                if salary_to.isdigit():
-                    results = filter_by_salary(salary_from, salary_to)
-                    print(f'После фильтрации доступно {len(results)} вакансий')
-                    break
-                else:
-                    print('На ввод допускаются только цифры. Попробуйте еще раз')
-                    continue
-            break
-        elif to_filter == '2':
-            break
-
-    while True:
-        sort_by_salary = input('Хотите ли вы отсортировать полученные результаты по ЗП?\n'
-                               '1 - СНАЧАЛА ВЫСОКИЕ\n'
-                               '2 - СНАЧАЛА НИЗКИЕ\n'
-                               '3 - СОРТИРОВКА НЕ НУЖНА\n')
-        if sort_by_salary == '1':
-            results = sort_by_salary_down(results)
-            print(results)
-            break
-        elif sort_by_salary == '2':
-            results = sort_by_salary_up(results)
-            print(results)
-            break
-        elif sort_by_salary == '3':
-            break
-
-    while True:
-        top_results = input('Введите количество вакансий для вывода в топ?\n')
-        if top_results.isdigit():
-            results = get_top_vacancies(results, int(top_results))
-            break
-        else:
-            print('На ввод допускаются только цифры. Попробуйте еще раз')
-            continue
-
-    while True:
-        deliver_results = input('Вывести результаты на экран или сохранить в файл EXCEL?\n'
-                                '1 - ВЫВЕСТИ НА ЭКРАН\n'
-                                '2 - EXCEL\n')
-        if deliver_results == '1':
-            print_results(results)
-            break
-        elif deliver_results == '2':
-            JsonFile().save_vacancy(user_file_path_xsl, results)
-            print(f'Ваши результаты сохранены в файл по указанному пути: {user_file_path_xsl}')
-            break
+    JsonFile().save_vacancy(file_path, results)
+    results = choose_filter(results)
+    if len(results) != 0:
+        print(f'После фильтрации нашли {len(results)} вакансий')
+    else:
+        print('По вашему запросу ничего не найдено. Попробуйте еще раз')
+        continue
+    results = choose_sorting(results)
+    results = choose_top_qty(results)
+    deliver_results(results, user_file_path_xsl)
 
     to_continue = input('Хотите начать поиск сначала или выйти?\n'
                         '1 - СНАЧАЛА\n'
                         '2 - ВЫЙТИ\n')
     if to_continue == '1':
-        request_num += 1
         continue
     elif to_continue == '2':
         break
