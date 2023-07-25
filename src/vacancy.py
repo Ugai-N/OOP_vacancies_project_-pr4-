@@ -24,18 +24,33 @@ class Vacancy:
         self.salary_min = salary_min
         self.salary_max = salary_max
         self.currency = self.format_currency(currency)
-        self.salary_avr_rub = self.calc_salary(self.salary_min, self.salary_max, self.currency)
+        self.__salary_avr_rub = self.calc_salary(self.salary_min, self.salary_max, self.currency)
         self.description = description
         self.requirements = requirements
         Vacancy.vacancies_list.append(self)
 
+    @property
+    def salary_avr_rub(self):
+        '''Геттер для приватного атрибута __salary_avr_rub'''
+        return self.__salary_avr_rub
+
     def __repr__(self):
+        """Возвращает инфо в формате
+        'Vacancy(<num>, <title>, <area>, зп: от <salary_min> до <salary_max> <currency>, <company>)'"""
         return f"{self.__class__.__name__} " \
                f"(поз.{Vacancy.vacancies_list.index(self)}, " \
                f"{self.title}, {self.area}, зп: от {self.salary_min} до {self.salary_max} {self.currency}, " \
                f"{self.company}\n)"
 
     def __str__(self):
+        """Возвращает инфо в формате:
+        '№<num>: <title>,
+        Город: <area>,
+        Компания: <company>,
+        ЗП: от <salary_min> до <salary_max> <currency>,
+        Ссылка: <url>,
+        <description>,
+        <requirements>'"""
         return f"№{Vacancy.vacancies_list.index(self) + 1}: " \
                f"{self.title},\n" \
                f"Город: {self.area},\n" \
@@ -76,8 +91,27 @@ class Vacancy:
             response = requests.get(url, headers=headers)
             status_code = response.status_code
             data = json.loads(response.text)
-            # print(status_code)
             return int(data['result'])
+            # if from_ == 'AZN':
+            #     return amount * 53.09
+            # elif from_ == 'BYR':
+            #     return amount * 35.74
+            # elif from_ == 'EUR':
+            #     return amount * 99.68
+            # elif from_ == 'USD':
+            #     return amount * 90.25
+            # elif from_ == 'GEL':
+            #     return amount * 34.79
+            # elif from_ == 'KGS':
+            #     return amount * 53.09
+            # elif from_ == 'KZT':
+            #     return amount * 1.03
+            # elif from_ == 'RUB':
+            #     return amount
+            # elif from_ == 'UAH':
+            #     return amount * 2.44
+            # elif from_ == 'UZS':
+            #     return amount * 0.0078
 
     @staticmethod
     def format_currency(currency):
