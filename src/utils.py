@@ -1,5 +1,6 @@
 import sys
 
+
 from src.API import HeadHunterAPI, SuperJobAPI
 from src.file_manager import JsonFile
 from src.vacancy import Vacancy
@@ -56,11 +57,10 @@ def choose_filter(results, to_filter='ok') -> list:
 
 
 def filter_by_salary(salary_from, salary_to) -> list:
-    '''Проверяет вхождение мин и макс ЗП в установленные граница поиска'''
+    '''Проверяет вхождение среднего значения в рублях в установленные границы поиска'''
     filtered_list = []
     for i in Vacancy.vacancies_list:
-        if int(salary_from) <= int(i.salary_min) <= int(salary_to) or \
-                int(salary_from) <= int(i.salary_max) <= int(salary_to):
+        if int(salary_from) <= int(i.salary_avr_rub) <= int(salary_to):
             filtered_list.append(i)
     return filtered_list
 
@@ -115,9 +115,9 @@ def get_top_vacancies(vacancies, qty) -> list:
 
 def deliver_results(results, path):
     '''Взаимодействие с пользователем по выбору метода печати результатов'''
-    deliver_method = input('Вывести результаты на экран или сохранить в файл EXCEL?\n'
+    deliver_method = input('Вывести результаты на экран или сохранить в файл Json?\n'
                            '1 - ВЫВЕСТИ НА ЭКРАН\n'
-                           '2 - EXCEL\n')
+                           '2 - Json\n')
     if deliver_method == '1':
         print_results(results)
     elif deliver_method == '2':
@@ -129,3 +129,12 @@ def print_results(results):
     '''Функция вывода на печать в консоль'''
     for vacancy in results:
         print(vacancy)
+
+
+def results_qty(results):
+    '''Печатает кол-во найденных вакансий'''
+    if len(results) != 0:
+        print(f'Нашли {len(results)} вакансий')
+    else:
+        print('По вашему запросу ничего не найдено. Попробуйте еще раз')
+        sys.exit()

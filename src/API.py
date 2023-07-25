@@ -20,10 +20,7 @@ class AbstractAPI(ABC):
 
     @abstractmethod
     def get_vacancies(self, search_query: str) -> list:
-        '''обращается к API и выгружает список вакансии согласно запросу search_query
-        вместо дата экстенд, запустит перебор по вакансиям, где инициализировать дочку
-        вакансии опред.платформы и там потрошить атрибуты. родительский класс вакансии
-        будет иметь общие атрибуты и методы сравнения вакансий и тд'''
+        '''обращается к API и выгружает список вакансии согласно запросу search_query'''
         pass
 
     @abstractmethod
@@ -36,23 +33,12 @@ class HeadHunterAPI(AbstractAPI):
     '''Максимальное количество сущностей, выдаваемых API равно 2000 (стр. с 0 по 19 вкл. по 100)'''
 
     def check_connection(self) -> int:
+        '''функция для проверки статус-кода при работе с API'''
         response = requests.get('https://api.hh.ru/vacancies')
         return response.status_code
 
-    # Через перебор
-    # def get_vacancies(self, search_query: str) -> list:
-    #     data = []
-    #     for page in range(0, 20):
-    #         params = {
-    #                   'text': search_query,
-    #                   'page': page,
-    #                   'per_page': 10
-    #                  }
-    #         raw_data = requests.get('https://api.hh.ru/vacancies', params=params).json()
-    #         data.extend(raw_data['items'])
-    #     return data
-
     def get_vacancies(self, search_query: str) -> list:
+        '''обращается к API и выгружает список вакансии согласно запросу search_query'''
         data = []
         params = {
             'text': search_query,
@@ -71,6 +57,7 @@ class HeadHunterAPI(AbstractAPI):
         return data
 
     def initialize_vacancy(self, search_query: str) -> None:
+        '''для каждой вакансии, найденной по запросу search_query, инициализирует экземпляр Vacancy'''
         for i in self.get_vacancies(search_query):
             Vacancy(
                 'HeadHunter',
@@ -90,10 +77,12 @@ class SuperJobAPI(AbstractAPI):
     '''Максимальное количество сущностей, выдаваемых API равно 500 (стр. с 0 по 5 вкл. по 100)'''
 
     def check_connection(self) -> int:
+        '''функция для проверки статус-кода при работе с API'''
         response = requests.get('https://api.superjob.ru')
         return response.status_code
 
     def get_vacancies(self, search_query: str) -> list:
+        '''обращается к API и выгружает список вакансии согласно запросу search_query'''
         data = []
         search_from_date = datetime.datetime.now() - datetime.timedelta(days=30)
         search_from_date_unix = search_from_date.timestamp()
@@ -114,23 +103,8 @@ class SuperJobAPI(AbstractAPI):
             params['page'] = page + 1
         return data
 
-    # def get_vacancies(self, search_query: str) -> list:
-    #     data = []
-    #     search_from_date = datetime.datetime.now() - datetime.timedelta(days=30)
-    #     search_from_date_unix = search_from_date.timestamp()
-    #     for page in range(0, 5):
-    #         headers = {'X-Api-App-Id': SJ_API_KEY}
-    #         params = {
-    #                   'keyword': search_query,
-    #                   'count': 100,
-    #                   'no_agreement': 1,
-    #                   'date_published_from': search_from_date_unix
-    #                   }
-    #         raw_data = requests.get('https://api.superjob.ru/2.0/vacancies/', params=params, headers=headers).json()
-    #         data.extend(raw_data['objects'])
-    #     return data
-
     def initialize_vacancy(self, search_query: str) -> None:
+        '''для каждой вакансии, найденной по запросу search_query, инициализирует экземпляр Vacancy'''
         for i in self.get_vacancies(search_query):
             Vacancy(
                 'SuperJob',
