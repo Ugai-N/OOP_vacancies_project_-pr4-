@@ -68,8 +68,8 @@ class HeadHunterAPI(AbstractAPI):
                 int(i['salary']['from']) if i['salary']['from'] else 0,
                 int(i['salary']['to']) if i['salary']['to'] else 0,
                 i['salary']['currency'] if i['salary']['currency'] else None,
-                i['snippet']['responsibility'] if i['snippet']['responsibility'] else None,
-                i['snippet']['requirement'] if i['snippet']['requirement'] else None
+                i['snippet']['responsibility'].strip() if i['snippet']['responsibility'] else None,
+                i['snippet']['requirement'].strip() if i['snippet']['requirement'] else None
             )
 
 
@@ -115,6 +115,6 @@ class SuperJobAPI(AbstractAPI):
                 i['payment_from'],
                 i['payment_to'],
                 i['currency'],
-                i['work'],
-                i['candidat']
+                i['work'].replace('\n', '\t') if i['work'] else None,
+                i['candidat'].replace('\n', '\t') if i['candidat'] else None
             )
