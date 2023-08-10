@@ -4,8 +4,6 @@ import datetime
 
 import requests
 
-from src.vacancy import Vacancy
-
 SJ_API_KEY: str = os.getenv('SJ_API_KEY')
 
 
@@ -21,11 +19,6 @@ class AbstractAPI(ABC):
     @abstractmethod
     def get_vacancies(self, search_query: str) -> list:
         '''обращается к API и выгружает список вакансии согласно запросу search_query'''
-        pass
-
-    @abstractmethod
-    def initialize_vacancy(self, search_query: str) -> None:
-        '''для каждой вакансии, найденной по запросу search_query, инициализирует экземпляр Vacancy'''
         pass
 
 
@@ -55,22 +48,6 @@ class HeadHunterAPI(AbstractAPI):
                 break
             params['page'] = page + 1
         return data
-
-    def initialize_vacancy(self, search_query: str) -> None:
-        '''для каждой вакансии, найденной по запросу search_query, инициализирует экземпляр Vacancy'''
-        for i in self.get_vacancies(search_query):
-            Vacancy(
-                'HeadHunter',
-                i['name'],
-                i['area']['name'],
-                i['employer']['name'],
-                i['alternate_url'],
-                int(i['salary']['from']) if i['salary']['from'] else 0,
-                int(i['salary']['to']) if i['salary']['to'] else 0,
-                i['salary']['currency'] if i['salary']['currency'] else None,
-                i['snippet']['responsibility'].strip() if i['snippet']['responsibility'] else None,
-                i['snippet']['requirement'].strip() if i['snippet']['requirement'] else None
-            )
 
 
 class SuperJobAPI(AbstractAPI):
@@ -102,19 +79,3 @@ class SuperJobAPI(AbstractAPI):
                 break
             params['page'] = page + 1
         return data
-
-    def initialize_vacancy(self, search_query: str) -> None:
-        '''для каждой вакансии, найденной по запросу search_query, инициализирует экземпляр Vacancy'''
-        for i in self.get_vacancies(search_query):
-            Vacancy(
-                'SuperJob',
-                i['profession'],
-                i['town']['title'],
-                i['firm_name'],
-                i['link'],
-                i['payment_from'],
-                i['payment_to'],
-                i['currency'],
-                i['work'].replace('\n', '\t') if i['work'] else None,
-                i['candidat'].replace('\n', '\t') if i['candidat'] else None
-            )

@@ -1,36 +1,35 @@
 import sys
 
+from src.file_manager import CSVFile
+from src.vacancy import Vacancy, HeadHunterVacancy, SuperJobVacancy
 
-from src.API import HeadHunterAPI, SuperJobAPI
-from src.file_manager import JsonFile
-from src.vacancy import Vacancy
 stop_list = ['stop', 'стоп', 'выйти', 'выход', 'exit', 'quit']
 
 
 def choose_platform(search_query, platform_search='ok') -> list:
     '''Взаимодействие с пользователем по выбору платформы. Возвращает список экземпляров класса Vacancy.
-    Прекращает выполнение программы при вводе включевых слов их stop_list'''
+    Прекращает выполнение программы при вводе включевых слов из stop_list'''
     while platform_search.lower() not in stop_list:
         platform_search = input("Выберите платформу для поиска вакансий:\n"
                                 "1 - 'HeadHunter'\n"
                                 "2 - 'SuperJob'\n"
                                 "3 - 'ОБЕ'\n")
         if platform_search == '1':
-            HeadHunterAPI().initialize_vacancy(search_query)
+            HeadHunterVacancy.initialize_vacancy(search_query)
             return Vacancy.vacancies_list
         elif platform_search == '2':
-            SuperJobAPI().initialize_vacancy(search_query)
+            SuperJobVacancy.initialize_vacancy(search_query)
             return Vacancy.vacancies_list
         elif platform_search == '3':
-            HeadHunterAPI().initialize_vacancy(search_query)
-            SuperJobAPI().initialize_vacancy(search_query)
+            HeadHunterVacancy.initialize_vacancy(search_query)
+            SuperJobVacancy.initialize_vacancy(search_query)
             return Vacancy.vacancies_list
     sys.exit()
 
 
 def choose_filter(results, to_filter='ok') -> list:
     '''Взаимодействие с пользователем по выбору фильтра. Возвращает список экземпляров класса Vacancy,
-    запуская filter_by_salary(). Прекращает выполнение программы при вводе включевых слов их stop_list'''
+    запуская filter_by_salary(). Прекращает выполнение программы при вводе включевых слов из stop_list'''
     while to_filter.lower() not in stop_list:
         to_filter = input('Хотите ли вы дополнительно отфильтровать полученные результаты по ЗП?\n'
                           '1 - ДА\n'
@@ -68,7 +67,7 @@ def filter_by_salary(salary_from, salary_to) -> list:
 def choose_sorting(results, sort_by_salary='ok') -> list:
     '''Взаимодействие с пользователем по сортировке. Возвращает список экземпляров класса Vacancy,
     запуская sort_by_salary_up() или sort_by_salary_down().
-    Прекращает выполнение программы при вводе включевых слов их stop_list'''
+    Прекращает выполнение программы при вводе включевых слов из stop_list'''
     while sort_by_salary.lower() not in stop_list:
         sort_by_salary = input('Хотите ли вы отсортировать полученные результаты по ЗП?\n'
                                '1 - СНАЧАЛА ВЫСОКИЕ\n'
@@ -98,7 +97,7 @@ def sort_by_salary_down(results) -> list:
 def choose_top_qty(results, top_results='ok') -> list:
     '''Взаимодействие с пользователем по определению кол-ва вакансий в топе.
     Возвращает список экземпляров класса Vacancy, запуская get_top_vacancies().
-    Прекращает выполнение программы при вводе включевых слов их stop_list'''
+    Прекращает выполнение программы при вводе включевых слов из stop_list'''
     while top_results.lower() not in stop_list:
         top_results = input('Введите количество вакансий для вывода в топ?\n')
         if top_results.isdigit():
@@ -117,11 +116,11 @@ def deliver_results(results, path):
     '''Взаимодействие с пользователем по выбору метода печати результатов'''
     deliver_method = input('Вывести результаты на экран или сохранить в файл Json?\n'
                            '1 - ВЫВЕСТИ НА ЭКРАН\n'
-                           '2 - Json\n')
+                           '2 - CSV\n')
     if deliver_method == '1':
         print_results(results)
     elif deliver_method == '2':
-        JsonFile().save_vacancy(path, results)
+        CSVFile().save_vacancy(path, results)
         print(f'Ваши результаты сохранены в файл по указанному пути: {path}')
 
 
@@ -131,7 +130,7 @@ def print_results(results):
         print(vacancy)
 
 
-def results_qty(results):
+def print_results_qty(results):
     '''Печатает кол-во найденных вакансий'''
     if len(results) != 0:
         print(f'Нашли {len(results)} вакансий')

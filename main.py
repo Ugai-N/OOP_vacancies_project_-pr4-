@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from src.file_manager import JsonFile
-from src.utils import choose_platform, choose_filter, choose_sorting, choose_top_qty, deliver_results, results_qty
+from src.utils import choose_platform, choose_filter, choose_sorting, choose_top_qty, deliver_results, print_results_qty
 from src.vacancy import Vacancy
 
 user_name = input('Привет! я могу помочь в поиске вакансий '
@@ -16,18 +16,18 @@ while True:
                                                          f'_{str(user_name_upd)}_'
                                                          f'{str(search_query_upd)}'
                                                          f'.json')
-    user_file_path_xsl = Path(__file__).resolve().parent.joinpath('data',
+    user_file_path_csv = Path(__file__).resolve().parent.joinpath('data',
                                                                   f'{str(user_name_upd)}_'
                                                                   f'{str(search_query_upd)}'
-                                                                  f'.json')
+                                                                  f'.csv')
     results = choose_platform(search_query)
-    results_qty(results)
+    print_results_qty(results)
     JsonFile().save_vacancy(file_path, results)
     results = choose_filter(results)
-    results_qty(results)
+    print_results_qty(results)
     results = choose_sorting(results)
     results = choose_top_qty(results)
-    deliver_results(results, user_file_path_xsl)
+    deliver_results(results, user_file_path_csv)
 
     to_continue = input('Хотите начать поиск сначала или выйти?\n'
                         '1 - СНАЧАЛА\n'
