@@ -7,8 +7,8 @@ stop_list = ['stop', 'стоп', 'выйти', 'выход', 'exit', 'quit']
 
 
 def choose_platform(search_query, platform_search='ok') -> list:
-    '''Взаимодействие с пользователем по выбору платформы. Возвращает список экземпляров класса Vacancy.
-    Прекращает выполнение программы при вводе включевых слов из stop_list'''
+    """Взаимодействие с пользователем по выбору платформы. Возвращает список экземпляров класса Vacancy.
+    Прекращает выполнение программы при вводе включевых слов из stop_list"""
     while platform_search.lower() not in stop_list:
         platform_search = input("Выберите платформу для поиска вакансий:\n"
                                 "1 - 'HeadHunter'\n"
@@ -28,8 +28,8 @@ def choose_platform(search_query, platform_search='ok') -> list:
 
 
 def choose_filter(results, to_filter='ok') -> list:
-    '''Взаимодействие с пользователем по выбору фильтра. Возвращает список экземпляров класса Vacancy,
-    запуская filter_by_salary(). Прекращает выполнение программы при вводе включевых слов из stop_list'''
+    """Взаимодействие с пользователем по выбору фильтра. Возвращает список экземпляров класса Vacancy,
+    запуская filter_by_salary(). Прекращает выполнение программы при вводе включевых слов из stop_list"""
     while to_filter.lower() not in stop_list:
         to_filter = input('Хотите ли вы дополнительно отфильтровать полученные результаты по ЗП?\n'
                           '1 - ДА\n'
@@ -56,7 +56,7 @@ def choose_filter(results, to_filter='ok') -> list:
 
 
 def filter_by_salary(salary_from, salary_to) -> list:
-    '''Проверяет вхождение среднего значения в рублях в установленные границы поиска'''
+    """Проверяет вхождение среднего значения в рублях в установленные границы поиска"""
     filtered_list = []
     for i in Vacancy.vacancies_list:
         if int(salary_from) <= int(i.salary_avr_rub) <= int(salary_to):
@@ -65,9 +65,9 @@ def filter_by_salary(salary_from, salary_to) -> list:
 
 
 def choose_sorting(results, sort_by_salary='ok') -> list:
-    '''Взаимодействие с пользователем по сортировке. Возвращает список экземпляров класса Vacancy,
+    """Взаимодействие с пользователем по сортировке. Возвращает список экземпляров класса Vacancy,
     запуская sort_by_salary_up() или sort_by_salary_down().
-    Прекращает выполнение программы при вводе включевых слов из stop_list'''
+    Прекращает выполнение программы при вводе включевых слов из stop_list"""
     while sort_by_salary.lower() not in stop_list:
         sort_by_salary = input('Хотите ли вы отсортировать полученные результаты по ЗП?\n'
                                '1 - СНАЧАЛА ВЫСОКИЕ\n'
@@ -83,21 +83,21 @@ def choose_sorting(results, sort_by_salary='ok') -> list:
 
 
 def sort_by_salary_up(results) -> list:
-    '''Сортирует по принципу: сначала низкие'''
+    """Сортирует по принципу: сначала низкие"""
     sorted_results = sorted(results)
     return sorted_results
 
 
 def sort_by_salary_down(results) -> list:
-    '''Сортирует по принципу: сначала высокие'''
+    """Сортирует по принципу: сначала высокие"""
     sorted_results = sorted(results, reverse=True)
     return sorted_results
 
 
 def choose_top_qty(results, top_results='ok') -> list:
-    '''Взаимодействие с пользователем по определению кол-ва вакансий в топе.
+    """Взаимодействие с пользователем по определению кол-ва вакансий в топе.
     Возвращает список экземпляров класса Vacancy, запуская get_top_vacancies().
-    Прекращает выполнение программы при вводе включевых слов из stop_list'''
+    Прекращает выполнение программы при вводе включевых слов из stop_list"""
     while top_results.lower() not in stop_list:
         top_results = input('Введите количество вакансий для вывода в топ?\n')
         if top_results.isdigit():
@@ -108,12 +108,12 @@ def choose_top_qty(results, top_results='ok') -> list:
 
 
 def get_top_vacancies(vacancies, qty) -> list:
-    '''Возвращает первые вакансии в списки в коливестве qty'''
+    """Возвращает первые вакансии в списки в коливестве qty"""
     return vacancies[:qty]
 
 
 def deliver_results(results, path):
-    '''Взаимодействие с пользователем по выбору метода печати результатов'''
+    """Взаимодействие с пользователем по выбору метода печати результатов"""
     deliver_method = input('Вывести результаты на экран или сохранить в файл Json?\n'
                            '1 - ВЫВЕСТИ НА ЭКРАН\n'
                            '2 - CSV\n')
@@ -125,13 +125,13 @@ def deliver_results(results, path):
 
 
 def print_results(results):
-    '''Функция вывода на печать в консоль'''
+    """Функция вывода на печать в консоль"""
     for vacancy in results:
         print(vacancy)
 
 
 def print_results_qty(results):
-    '''Печатает кол-во найденных вакансий'''
+    """Печатает кол-во найденных вакансий"""
     if len(results) != 0:
         print(f'Нашли {len(results)} вакансий')
     else:

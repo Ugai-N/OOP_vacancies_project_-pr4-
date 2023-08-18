@@ -5,28 +5,28 @@ from abc import ABC, abstractmethod
 
 
 class AbstractFile(ABC):
-    '''абстрактный класс, вкл методы для добавления вакансий в файл,
+    """абстрактный класс, вкл методы для добавления вакансий в файл,
     получения данных из файла по указанным критериям и
-    удаления информации о вакансиях'''
+    удаления информации о вакансиях"""
 
     @abstractmethod
     def save_vacancy(self, file, vacancy):
-        '''Сохраняет/добавляет в файл значения атрибутов экземпляра Vacancy'''
+        """Сохраняет/добавляет в файл значения атрибутов экземпляра Vacancy"""
         pass
 
     @abstractmethod
     def get_vacancy(self, file, *keyword):
-        '''Возвращает список вакансий из указанного файла, содержащих искомые слова'''
+        """Возвращает список вакансий из указанного файла, содержащих искомые слова"""
         pass
 
     @abstractmethod
     def del_vacancy(self, file, num):
-        '''Удаляет вакансию из указанного файла по номеру вакансии'''
+        """Удаляет вакансию из указанного файла по номеру вакансии"""
         pass
 
 
 class JsonFile(AbstractFile):
-    '''класс для работы с вакансиями в JSON-файле'''
+    """класс для работы с вакансиями в JSON-файле"""
 
     def save_vacancy(self, file, vacancy_list) -> None:
         """Сохраняет/добавляет в файл json значения атрибутов экземпляра Vacancy."""
@@ -59,8 +59,8 @@ class JsonFile(AbstractFile):
                     json.dump(vacancies_filelist, f, ensure_ascii=False)
 
     def get_vacancy(self, file, *keyword) -> list:
-        '''Возвращает список вакансий из указанного json файла, содержащих искомые слова.
-        Для унификации поиска все данные приведены в нижнем регистре'''
+        """Возвращает список вакансий из указанного json файла, содержащих искомые слова.
+        Для унификации поиска все данные приведены в нижнем регистре"""
         filtered_lst = []
         with open(file, 'r', encoding='utf-8') as f:
             vacancies_filelist = json.load(f)
@@ -71,7 +71,7 @@ class JsonFile(AbstractFile):
         return filtered_lst
 
     def del_vacancy(self, file, num) -> None:
-        '''Удаляет вакансию из указанного json файла по номеру вакансии'''
+        """Удаляет вакансию из указанного json файла по номеру вакансии"""
         with open(file, 'r', encoding='utf-8') as f:
             vacancies_filelist = json.load(f)
             for vacancy in vacancies_filelist:
@@ -82,7 +82,7 @@ class JsonFile(AbstractFile):
 
 
 class CSVFile(AbstractFile):
-    '''класс для работы с вакансиями в CSV-файле'''
+    """класс для работы с вакансиями в CSV-файле"""
 
     def save_vacancy(self, file, vacancy_list) -> None:
         """Сохраняет/добавляет в файл csv значения атрибутов экземпляра Vacancy."""
@@ -126,8 +126,8 @@ class CSVFile(AbstractFile):
             file_writer.writerows(vacancies_dict_list)
 
     def get_vacancy(self, file, *keyword) -> list:
-        '''Возвращает список вакансий из указанного csv файла, содержащих искомые слова.
-        Для унификации поиска все данные приведены в нижнем регистре'''
+        """Возвращает список вакансий из указанного csv файла, содержащих искомые слова.
+        Для унификации поиска все данные приведены в нижнем регистре"""
         filtered_lst = []
         with open(file, mode="r", newline='', encoding='utf-8-sig') as r_file:
             file_reader = csv.reader(r_file)
@@ -138,8 +138,8 @@ class CSVFile(AbstractFile):
         return filtered_lst
 
     def del_vacancy(self, file, num) -> None:
-        '''Удаляет вакансию из указанного csv файла по номеру вакансии
-        ('этот вариант удаляет вакансию в изначальном файле. См альтернативный вариант - ниже)'''
+        """Удаляет вакансию из указанного csv файла по номеру вакансии
+        ('этот вариант удаляет вакансию в изначальном файле. См альтернативный вариант - ниже)"""
         with open(file, mode="r", newline='', encoding='utf-8-sig') as source:
             file_reader = csv.DictReader(source)
             new_list = []
