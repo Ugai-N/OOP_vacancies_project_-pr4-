@@ -9,9 +9,9 @@ CURRENCY_API_KEY = os.getenv('CURRENCY_API_KEY')
 
 
 class Vacancy:
-    '''класс для работы с вакансиями.
+    """класс для работы с вакансиями.
     Поддерживает методы сравнения вакансий между собой по зарплате и валидирует данные,
-    которыми инициализируются его атрибуты'''
+    которыми инициализируются его атрибуты"""
 
     vacancies_list = []
 
@@ -33,7 +33,7 @@ class Vacancy:
 
     @property
     def salary_avr_rub(self):
-        '''Геттер для приватного атрибута __salary_avr_rub'''
+        """Геттер для приватного атрибута __salary_avr_rub"""
         return self.__salary_avr_rub
 
     def __repr__(self):
@@ -64,14 +64,14 @@ class Vacancy:
                f"{self.requirements}\n\n"
 
     def __lt__(self, other):
-        '''Проверяет кол-во ЗП по первой вакансии < второй'''
+        """Проверяет кол-во ЗП по первой вакансии < второй"""
         if isinstance(other, Vacancy):
             return int(self.salary_avr_rub) < int(other.salary_avr_rub)
         raise AttributeError('сравнение по ЗП возможно только между Вакансиями')
 
     @staticmethod
     def calc_salary(salary_min, salary_max, currency):
-        '''Возвращает среднее значение ЗП, если  определены мин и макс. Если нет - возвращает то, ктр определено'''
+        """Возвращает среднее значение ЗП, если  определены мин и макс. Если нет - возвращает то, ктр определено"""
         if salary_min == 0:
             return Vacancy.exchange_currency(salary_max, currency)
         elif salary_max == 0:
@@ -82,7 +82,7 @@ class Vacancy:
 
     @staticmethod
     def exchange_currency(amount, from_):
-        '''Возвращает размер ЗП с учетом пересчета в рубли по текущему курсу'''
+        """Возвращает размер ЗП с учетом пересчета в рубли по текущему курсу"""
         url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={from_}&amount={amount}"
         headers = {"apikey": CURRENCY_API_KEY}
 
@@ -114,7 +114,7 @@ class Vacancy:
 
     @staticmethod
     def format_currency(currency):
-        '''Форматирует наименование валюты, приводя к единым значениям и формату'''
+        """Форматирует наименование валюты, приводя к единым значениям и формату"""
         if currency == 'rub' or currency == 'RUR':
             return 'RUB'
         else:
@@ -122,11 +122,11 @@ class Vacancy:
 
 
 class HeadHunterVacancy(Vacancy):
-    '''Дочерний класс Vacancy для работы с платформой HeadHunter'''
+    """Дочерний класс Vacancy для работы с платформой HeadHunter"""
 
     @classmethod
     def initialize_vacancy(cls, search_query: str) -> None:
-        '''для каждой вакансии, найденной по запросу search_query, инициализирует экземпляр Vacancy'''
+        """для каждой вакансии, найденной по запросу search_query, инициализирует экземпляр Vacancy"""
         for i in HeadHunterAPI().get_vacancies(search_query):
             cls(
                 'HeadHunter',
@@ -143,11 +143,11 @@ class HeadHunterVacancy(Vacancy):
 
 
 class SuperJobVacancy(Vacancy):
-    '''Дочерний класс Vacancy для работы с платформой SuperJob'''
+    """Дочерний класс Vacancy для работы с платформой SuperJob"""
 
     @classmethod
     def initialize_vacancy(cls, search_query: str) -> None:
-        '''для каждой вакансии, найденной по запросу search_query, инициализирует экземпляр Vacancy'''
+        """для каждой вакансии, найденной по запросу search_query, инициализирует экземпляр Vacancy"""
         for i in SuperJobAPI().get_vacancies(search_query):
             cls(
                 'SuperJob',
