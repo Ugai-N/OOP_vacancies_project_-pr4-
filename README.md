@@ -1,3 +1,21 @@
+# Script for searching job vacancies at platforms "HeadHunter" & "SuperJob" upon the user's request
+
+# General:
+
+* The search results are subject to the limits set by platforms: HeadHunter - 2000 vacancies, SuperJob - 500 vacancies
+* Search results end into initialization of Vacancy class objects and are saved into JSON file
+
+# Optional functions:
+
+* Opportunity to filter the vacancies as per the salary amount 
+* Opportunity to sort as per salary (ascending & descending) 
+* Input of results qty to be included in TOP-results
+* Choosing of console printing or saving to CSV-file (user file version)
+
+
+Note: filtering and further sorting is performed in accordance to the current currency exchange rate via https://apilayer.com/
+
+
 # Программа, реализующая поиск вакансий на платформах "HeadHunter" и "SuperJob" по запросу пользователя
 
 # Общее:
